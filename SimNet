@@ -1,0 +1,28 @@
+{load_file("nrngui.hoc")}
+objectvar save_window_, rvp_
+objectvar scene_vector_[2]
+objectvar ocbox_, ocbox_list_, scene_, scene_list_
+{ocbox_list_ = new List()  scene_list_ = new List()}
+{pwman_place(0,0,0)}
+
+//Begin ArtCellGUI[0]
+{
+load_file("netbild.hoc")
+}
+ocbox_ = new ArtCellGUI(1)
+{object_push(ocbox_)}
+{
+tobj = new MechanismStandard("IntervalFire")
+tobj.set("tau", 5, 0)
+tobj.set("invl", 10, 0)
+}
+{append(tobj, "IF")}
+{object_pop()}
+{
+ocbox_.map("ArtCellGUI[0]", -3, 129, 358.2, 293.4)
+}
+objref ocbox_
+//End ArtCellGUI[0]
+
+objectvar scene_vector_[1]
+{doNotify()}

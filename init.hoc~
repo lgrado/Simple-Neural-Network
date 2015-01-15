@@ -1,0 +1,4 @@
+load_file("nrngui.hoc")
+load_file("netdefs.hoc") // from NB-generated hoc file
+load_file("makenet.hoc") // specifies network
+//load_file("rig.hoc") // to adjust params and run simulations

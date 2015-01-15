@@ -1,0 +1,70 @@
+{load_file("nrngui.hoc")}
+objectvar save_window_, rvp_
+objectvar scene_vector_[3]
+objectvar ocbox_, ocbox_list_, scene_, scene_list_
+{ocbox_list_ = new List()  scene_list_ = new List()}
+{pwman_place(0,0,0)}
+{
+xpanel("RunControl", 0)
+v_init = -65
+xvalue("Init","v_init", 1,"stdinit()", 1, 1 )
+xbutton("Init & Run","run()")
+xbutton("Stop","stoprun=1")
+runStopAt = 5
+xvalue("Continue til","runStopAt", 1,"{continuerun(runStopAt) stoprun=1}", 1, 1 )
+runStopIn = 1
+xvalue("Continue for","runStopIn", 1,"{continuerun(t + runStopIn) stoprun=1}", 1, 1 )
+xbutton("Single Step","steprun()")
+t = 0
+xvalue("t","t", 2 )
+tstop = 500
+xvalue("Tstop","tstop", 1,"tstop_changed()", 0, 1 )
+dt = 0.025
+xvalue("dt","dt", 1,"setdt()", 0, 1 )
+steps_per_ms = 40
+xvalue("Points plotted/ms","steps_per_ms", 1,"setdt()", 0, 1 )
+screen_update_invl = 0.05
+xvalue("Scrn update invl","screen_update_invl", 1,"", 0, 1 )
+realtime = 0
+xvalue("Real Time","realtime", 0,"", 0, 1 )
+xpanel(6,115)
+}
+
+//Begin VariableTimeStep
+{
+ocbox_ = NumericalMethodPanel[0]
+}
+{object_push(ocbox_)}
+{
+atol_ = 0.001  CVode[0].atol(atol_)
+restore(300, 1)
+}
+{object_pop()}
+{
+ocbox_.map("VariableTimeStep", 4, 558, 225, 183.6)
+}
+objref ocbox_
+//End VariableTimeStep
+
+{
+save_window_ = new Graph(0)
+save_window_.size(0,500,0,2)
+scene_vector_[2] = save_window_
+{save_window_.view(0, 0, 500, 2, 300, 117, 300.6, 200.8)}
+}
+{
+xpanel("Model parameters", 0)
+w = 0
+xvalue("Weight","w", 1,"weight(w)", 0, 0 )
+del = 1
+xvalue("Delay (ms)","del", 1,"delay(del)", 0, 0 )
+tau = 10
+xvalue("Cell time constant (ms)","tau", 1,"settau(tau)", 0, 0 )
+low = 10
+xvalue("Shortest natural ISI","low", 1,"interval (low, high)", 0, 0 )
+high = 11
+xvalue("Longest natural ISI","high", 1,"interval(low, high)", 0, 0 )
+xpanel(304,460)
+}
+objectvar scene_vector_[1]
+{doNotify()}

@@ -1,0 +1,48 @@
+// Artificial cells no longer need a default section.
+//Network cell templates
+//Artificial cells
+//   IF_IntervalFire
+
+
+begintemplate IF_IntervalFire
+public pp, connect2target, x, y, z, position, is_art
+objref pp
+proc init() {
+  pp = new IntervalFire()
+}
+func is_art() { return 1 }
+obfunc connect2target() { localobj nc
+  nc = new NetCon(pp, $o1)
+  if (numarg() == 2) { $o2 = nc }
+  return nc
+}
+proc position(){x=$1  y=$2  z=$3}
+endtemplate IF_IntervalFire
+
+//Network specification interface
+
+objref cells, nclist, netcon
+{cells = new List()  nclist = new List()}
+
+func cell_append() {cells.append($o1)  $o1.position($2,$3,$4)
+	return cells.count - 1
+}
+
+func nc_append() {//srcindex, tarcelindex, synindex
+  if ($3 >= 0) {
+    netcon = cells.object($1).connect2target(cells.object($2).synlist.object($3))
+    netcon.weight = $4   netcon.delay = $5
+  }else{
+    netcon = cells.object($1).connect2target(cells.object($2).pp)
+    netcon.weight = $4   netcon.delay = $5
+  }
+  nclist.append(netcon)
+  return nclist.count - 1
+}
+
+//Network instantiation
+
+  /* IF0 */  cell_append(new IF_IntervalFire(),	-131,	 30, 0)
+  /* IF1 */  cell_append(new IF_IntervalFire(),	-19,	 31, 0)
+  /* IF1 -> IF0    */  nc_append(1, 0, -1,  -0.1,1)
+  /* IF0 -> IF1    */  nc_append(0, 1, -1,  -0.1,1)

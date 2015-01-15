@@ -1,0 +1,74 @@
+//////// users interface ////////
+
+load_file("runctl.ses") // RunControl and VariableTimestep
+
+// prepare to record and display spike trains
+objref netcon, vec, spikes, nil, graster
+
+proc preprasterplot() {
+    spikes = new List()
+    for i=0,cells.count()-1{
+	vec=new Vector()
+	netcon = new NetCon(cells.object(i).pp, nil)
+	netcon.record(vec)
+	spikes.append(vec)
+    }
+    objref netcon, vec
+    
+    graster =  new Graph(0)
+    graster.view(0,0,tstop,cells.count(),300,117,300.6,200.8)
+}
+
+preprasterplot()
+
+objref spikey
+
+proc showraster() {
+    graster.erase_all()
+    for i = 0, cells.count()-1 {
+	spikey = spikes.object(i).c
+	spikey.fill(i+1)
+	spikey.mark(graster, spikes.object(i), "|", 6)
+    }
+    objref spikey
+}
+
+// destroys existing net and creates new one, also creates new spike train raster plot
+
+proc recreate() {
+    createnet($1)
+    settau(tau)
+    interval(low,high)
+    weight(w)
+    delay(del)
+    preprasterplot()
+}
+
+xpanel("Model parameters")
+xvalue("Number of Cells","ncell",1,"recreate(ncell)",0,0)
+xvalue("Weight","w",1,"weight(w)",0,0)
+xvalue("Delay (ms)","del",1,"delay(del)",0,0)
+xvalue("Cell time constant (ms)","tau",1,"settau(tau)",0,0)
+xvalue("Shortest natural ISI","low",1,"interval (low, high)",0,0)
+xvalue("Longest natural ISI","high",1,"interval(low, high)",0,0)
+xpanel(304,460)
+
+//////// custom run() and init() ////////
+
+proc run() {
+    stdinit()
+    continuerun(tstop)
+    showraster()
+}
+
+proc init() {
+    finitialize(v_init)
+    graster.erase_all()
+    graster.size(0,tstop,0,cells.count())
+    if (cvode.active()){
+	cvode.re_init()
+    } else {
+	fcurrent()
+    }
+    frecord_init()
+}

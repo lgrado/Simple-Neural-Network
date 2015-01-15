@@ -1,0 +1,80 @@
+/*
+returns value >= $2
+for bulletproofing procs against nonsense arguments
+*/
+
+func ge() {
+    if ($1<$2) {
+	$1=$2
+    }
+    return $1
+}
+
+//////// create a network ////////
+
+//argument is desired number of cells
+
+proc createnet() { local i,j
+    $1 = ge($1,2) // force net to have at least two cells
+    ncell = $1
+    //so we can make a new net without having to exit and restart...
+    nclist.remove_all()
+    cells.remove_all()
+    for i=0, $1-1 {
+	cell_append(new IF_IntervalFire(), i, 0, 0)
+    }
+    for i=0, $1-1 for j=0, $1-1 if (i!=j) {
+	//let weight be 0, we'll give it a nonzero value elsewhere
+	nc_append(i,j,-1,0,1)
+    }
+    objref netcon // leave no loose ends (see nc_append())
+}
+
+//////// specify parameters ////////
+
+// call this settau() to avoid conflict with scalar tau
+
+proc settau() { local i
+    $1 = ge($1,0.1) //min tau is 0.1 ms
+    tau = $1
+    for i = 0, cells.count-1{
+	cells.object(i).pp.tau=$1
+    }
+}
+
+// args are low and high
+
+proc interval () { local i
+    $1 = ge($1,1) // min low ISI is 1 ms
+    $2 = ge ($2,$1)
+    low = $1
+    high = $2
+    x = low
+    dx = (high - low)/(cells.count-1)
+    for i=0, cells.count-1 {
+	cells.object(i).pp.invl=x
+	x += dx
+    }
+}
+
+proc weight() { local i
+    w = $1
+    for i=0, nclist.count-1 {
+	nclist.object(i).weight = $1
+    }
+}
+
+proc delay() { local i
+    $1 = ge($1,0) //mindel is 0 ms
+    del = $1
+    for i=0, nclist.count-1 {
+	nclist.object(i).delay = $1
+    }
+}
+//////// actually make net and set parameters ////////
+
+createnet(2)
+settau(10)
+interval(10,11)
+weight(0)
+delay(1)

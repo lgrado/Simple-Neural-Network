@@ -1,0 +1,12 @@
+proc createnet() { local i, j
+    if ($1<2) { $1 = 2 }
+    ncell = $1
+    nclist.remove_all()
+    cells.remove_all()
+    for i=0, ncell-1 {
+	cell_append(new IF_IntervalFire(),i,0,0)
+    }
+    for i=0, ncell-1 for j=0, ncell-1 if (i!=j) {
+	nc_append(i,j,-1,0,1)
+    }
+}
