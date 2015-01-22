@@ -3,7 +3,7 @@
 load_file("runctl.ses") // RunControl and VariableTimestep
 
 // prepare to record and display spike trains
-objref netcon, vec, spikes, nil, graster
+objref netcon, vec, spikes, nil, graster, weightvec, tempweightvec
 
 proc preprasterplot() {
     spikes = new List()
@@ -13,7 +13,12 @@ proc preprasterplot() {
 	netcon.record(vec)
 	spikes.append(vec)
     }
-    objref netcon, vec
+    vec=new Vector()
+    for i=0,nclist.count()-1{
+	vec.append(nclist.object(i).weight)
+    }
+    
+    //objref netcon, vec
     
     graster =  new Graph(0)
     graster.view(0,0,tstop,cells.count(),300,117,300.6,200.8)
@@ -59,6 +64,16 @@ proc run() {
     stdinit()
     continuerun(tstop)
     showraster()
+    print weightvec
+}
+
+weightvec=new Vector()
+proc advance(){
+    fadvance()
+    tempweightvec=new Vector()
+    for i=0,nclist.count()-1{
+	weightvec.append(nclist.object(i).weight)
+    }
 }
 
 proc init() {

@@ -44,5 +44,5 @@ func nc_append() {//srcindex, tarcelindex, synindex
 
   /* IF0 */  cell_append(new IF_IntervalFire(),	-131,	 30, 0)
   /* IF1 */  cell_append(new IF_IntervalFire(),	-19,	 31, 0)
-  /* IF1 -> IF0    */  nc_append(1, 0, -1,  -0.1,1)
-  /* IF0 -> IF1    */  nc_append(0, 1, -1,  -0.1,1)
+  /* IF1 -> IF0    */  nc_append(1, 0, -1,  -0.1, 1)
+  /* IF0 -> IF1    */  nc_append(0, 1, -1,  -0.1, 1)
